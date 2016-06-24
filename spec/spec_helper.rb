@@ -37,6 +37,7 @@ def start_tcp_server(port=2500)
                     break
                 end
                 logger.info "Got: #{msg.inspect}"
+                sleep 0.0001
                 client.write(msg)
                 logger.info "Sent: #{msg.inspect}"
                 if msg.chomp == 'simulate_crash'
