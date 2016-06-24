@@ -5,7 +5,7 @@ Over and over I see developers struggling to implement basic sockets with featue
 With easy socket gem, you can implement TCP, UDP and Unix sockets with the following features:
 
   - Reliable and safe timeouts ([why not use ruby timeout stdlib](http://www.mikeperham.com/2015/05/08/timeout-rubys-most-dangerous-api/) ).
-  - Receiving big (more than xxx bytes) response messages in a non blocking way.
+  - Receiving big (more than 16384 bytes) response messages in a non blocking way.
   - Option to enable custome message (line) separators.
   
 I also strongly recommend [the following book](http://www.jstorimer.com/products/working-with-tcp-sockets) if you want to learn more about sockets.
