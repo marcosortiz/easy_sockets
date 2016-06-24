@@ -126,7 +126,7 @@ describe EasySockets::TcpSocket do
 
                 expect {
                     s.send_msg('bla')
-                }.to raise_error(EOFError, /end of file reached/)
+                }.to raise_error(EOFError)
                 check_connected(s, false)
                 expect(s.connect_count).to eq 1
                 expect(s.disconnect_count).to eq 1
