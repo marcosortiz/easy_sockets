@@ -1,8 +1,14 @@
-# EasySockets
+# Easy Sockets
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/easy_sockets`. To experiment with that code, run `bin/console` for an interactive prompt.
+Over and over I see developers struggling to implement basic sockets with featues available on rubie's socket stdlib.
 
-TODO: Delete this and the text above, and describe your gem
+With easy socket gem, you can implement TCP, UDP and Unix sockets with the following features:
+
+  - Reliable and safe timeouts ([why not use ruby timeout stdlib](http://www.mikeperham.com/2015/05/08/timeout-rubys-most-dangerous-api/) ).
+  - Receiving big (more than xxx bytes) response messages in a non blocking way.
+  - Option to enable custome message (line) separators.
+  
+I also strongly recommend [the following book](http://www.jstorimer.com/products/working-with-tcp-sockets) if you want to learn more about sockets.
 
 ## Installation
 
@@ -22,7 +28,7 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+TODO: pending.
 
 ## Development
 
@@ -32,7 +38,7 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/easy_sockets.
+Bug reports and pull requests are welcome on GitHub at https://github.com/marcosortiz/easy_sockets.
 
 
 ## License
