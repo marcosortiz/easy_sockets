@@ -1,5 +1,25 @@
 # Easy Sockets
 
+[![Gem Version][GV img]][Gem Version]
+[![Build Status][BS img]][Build Status]
+[![Dependency Status][DS img]][Dependency Status]
+[![Code Climate][CC img]][Code Climate]
+[![Coverage Status][CS img]][Coverage Status]
+
+[Gem Version]: https://rubygems.org/gems/easy_sockets
+[Build Status]: https://travis-ci.org/marcosortiz/easy_sockets
+[Dependency Status]: https://gemnasium.com/marcosortiz/easy_sockets
+[Code Climate]: https://codeclimate.com/github/marcosortiz/easy_sockets
+[Coverage Status]: https://codeclimate.com/github/marcosortiz/easy_sockets/coverage
+
+[GV img]: https://badge.fury.io/rb/easy_sockets.svg
+[BS img]: https://travis-ci.org/marcosortiz/easy_sockets.svg
+[DS img]: https://gemnasium.com/marcosortiz/easy_sockets.svg
+[CC img]: https://codeclimate.com/github/marcosortiz/easy_sockets/badges/gpa.svg
+[CS img]: https://codeclimate.com/github/marcosortiz/easy_sockets/badges/coverage.svg
+
+## Description
+
 Over and over I see developers struggling to implement basic sockets with featues available on rubie's socket stdlib.
 
 With easy socket gem, you can implement TCP, UDP and Unix sockets with the following features:
@@ -31,6 +51,7 @@ Or install it yourself as:
 TODO: pending.
 
 ## Development
+
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
 
