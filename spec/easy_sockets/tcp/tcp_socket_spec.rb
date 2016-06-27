@@ -85,8 +85,14 @@ describe EasySockets::TcpSocket do
             end
         end
         context 'times out' do
+            
+            let :host do
+                # non-routable IP address, to simulate connect timeout
+                '10.255.255.1'
+            end
+            
             it 'must raise Timeout::Error' do
-                s = tcp_socket( timeout: 0.000001)
+                s = tcp_socket
                 expect{
                     s.connect
                 }.to raise_error(Timeout::Error, /Timeout is set to/)
@@ -120,7 +126,7 @@ describe EasySockets::TcpSocket do
 
                 expect {
                     s.send_msg('bla')
-                }.to raise_error(EOFError, /end of file reached/)
+                }.to raise_error(EOFError)
                 check_connected(s, false)
                 expect(s.connect_count).to eq 1
                 expect(s.disconnect_count).to eq 1
