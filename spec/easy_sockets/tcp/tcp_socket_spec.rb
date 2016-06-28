@@ -117,7 +117,7 @@ describe EasySockets::TcpSocket do
                 'simulate_crash'
             end
 
-            it 'must raise EOFError and disconnect' do
+            it 'must raise an error and disconnect' do
                 s = tcp_socket
                 s.connect
                 check_connected(s, true)
@@ -126,7 +126,7 @@ describe EasySockets::TcpSocket do
 
                 expect {
                     s.send_msg('bla')
-                }.to raise_error(EOFError)
+                }.to raise_error(/(end of file|Connection reset)/) # can be EOFError or ECONNRESET depending on the OS
                 check_connected(s, false)
                 expect(s.connect_count).to eq 1
                 expect(s.disconnect_count).to eq 1
