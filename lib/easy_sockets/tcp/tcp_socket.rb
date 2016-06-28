@@ -15,7 +15,7 @@ module EasySockets
         def on_connect
             @socket = Socket.new(:INET, :STREAM)
             begin
-                # Initiate a nonblocking connection to google.com on port 80.
+                # Initiate a nonblocking connection
                 remote_addr = Socket.pack_sockaddr_in(@port, @host)
                 @socket.connect_nonblock(remote_addr)
 
