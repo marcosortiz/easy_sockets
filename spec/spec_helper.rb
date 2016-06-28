@@ -3,6 +3,7 @@ CodeClimate::TestReporter.start
 
 $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
 require 'easy_sockets'
+require 'easy_sockets/tcp/tcp_server'
 
 TEST_LOGS_PATH = "test_logs"
 
@@ -24,8 +25,16 @@ end
 def start_tcp_server(port=2500)
     @servers ||= []
     t = Thread.new do
-        server = TCPServer.new(port)
-        logger = Logger.new("#{TEST_LOGS_PATH}/tcp_server.log")
+        opts = {
+            logger: Logger.new("#{TEST_LOGS_PATH}/tcp_server.log"),
+            port: port,
+        }
+        server = EasySockets::TcpServer.new(opts)
+        server.start
+    end
+    @servers << t
+    t.join(0.01)
+end
         loop do
             client = server.accept
             loop do
