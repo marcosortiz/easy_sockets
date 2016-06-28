@@ -65,7 +65,7 @@ module EasySockets
                 begin
                     msg = read_non_block(connection)
                     next if msg.nil? || msg.empty?
-                    # sleep @sleep_time
+                    sleep @sleep_time
                     write_non_block(connection, msg)
                     if msg.chomp == 'simulate_crash'
                         connection.close
