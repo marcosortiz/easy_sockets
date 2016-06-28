@@ -13,7 +13,7 @@
 [Coverage Status]: https://codeclimate.com/github/marcosortiz/easy_sockets/coverage
 
 [GV img]: https://badge.fury.io/rb/easy_sockets.svg
-[BS img]: https://travis-ci.org/marcosortiz/easy_sockets.svg
+[BS img]: https://travis-ci.org/marcosortiz/easy_sockets.svg?branch=master
 [DS img]: https://gemnasium.com/marcosortiz/easy_sockets.svg
 [CC img]: https://codeclimate.com/github/marcosortiz/easy_sockets/badges/gpa.svg
 [CS img]: https://codeclimate.com/github/marcosortiz/easy_sockets/badges/coverage.svg
