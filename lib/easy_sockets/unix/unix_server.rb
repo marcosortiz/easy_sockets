@@ -7,7 +7,7 @@ module EasySockets
     # This class was created for testing purposes only. It should not be used
     # in production.
     #
-    class TcpServer
+    class UnixServer
         include EasySockets::ServerUtils
 
         attr_reader :connections
@@ -25,8 +25,8 @@ module EasySockets
         def start
             return if @started
             @started = true
-            @server = TCPServer.new(@port)
-            @logger.info "Listening on tcp://127.0.0.1:#{@port}"
+            @server = UNIXServer.new(@socket_path)
+            @logger.info "Listening on #{@socket_path}"
             loop do
                 shutdown if @stop_requested
                 # connection = @server.accept
@@ -44,8 +44,8 @@ module EasySockets
         private
         
         def set_opts(opts)
-            @port = opts[:port].to_i
-            @port = DEFAULT_PORT if @port <= 0
+            @socket_path = opts[:socket_path]
+            @socket_path ||= '/tmp/unix_server'
             
             @logger = opts[:logger] || Logger.new(STDOUT)
             
@@ -71,7 +71,7 @@ module EasySockets
                         connection.close
                         break
                     end
-                rescue EOFError, Errno::ECONNRESET
+                rescue EOFError, Errno::ECONNRESET, Errno::EPIPE
                     connection.close
                     @logger.info 'Client disconnected.'
                     break

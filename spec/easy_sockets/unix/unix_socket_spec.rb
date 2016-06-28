@@ -1,18 +1,14 @@
 require 'spec_helper'
-require 'easy_sockets/tcp/tcp_socket'
+require 'easy_sockets/unix/unix_socket'
 
-describe EasySockets::TcpSocket do
+describe EasySockets::UnixSocket do
 
-    let :host do
-        '127.0.0.1'
-    end
-
-    let :port do
-        2500
+    let :socket_path do
+        "#{TEST_LOGS_PATH}/unix_server"
     end
 
     before :all do
-        start_tcp_server(2500)
+        start_unix_server("#{TEST_LOGS_PATH}/unix_server")
     end
     
     after :all do
@@ -21,14 +17,13 @@ describe EasySockets::TcpSocket do
 
     let :opts do
         {
-            :host => host,
-            :port => port,
-            :logger => Logger.new("#{TEST_LOGS_PATH}/tcp_client.log")
+            :socket_path => socket_path,
+            :logger => Logger.new("#{TEST_LOGS_PATH}/unix_client.log")
         }
     end
     
-    def tcp_socket(options={})
-        EasySockets::TcpSocket.new(opts.merge(options))
+    def unix_socket(options={})
+        EasySockets::UnixSocket.new(opts.merge(options))
     end
 
     def check_connected(socket, status)
@@ -47,10 +42,9 @@ describe EasySockets::TcpSocket do
 
     describe 'initialization' do
         it 'must properly setup the options and connect to the server' do
-            s = tcp_socket
+            s = unix_socket
             expect(s.instance_variable_get(:@socket)).to be nil
-            expect(s.instance_variable_get(:@host)).to eq host
-            expect(s.instance_variable_get(:@port)).to eq port
+            expect(s.instance_variable_get(:@socket_path)).to eq socket_path
             expect(s.instance_variable_get(:@timeout)).to eq EasySockets::BasicSocket::DEFAULT_TIMEOUT
             expect(s.instance_variable_get(:@separator)).to eq EasySockets::CRLF
             expect(s.connect_count).to eq 0
@@ -61,7 +55,7 @@ describe EasySockets::TcpSocket do
     describe 'connecting' do
         context 'with server available' do
             it 'must be an idempotent operation' do
-                s = tcp_socket
+                s = unix_socket
                 expect(s.instance_variable_get(:@socket)).to be nil
                 10.times do
                     s.connect
@@ -72,38 +66,40 @@ describe EasySockets::TcpSocket do
                 check_connected(s, false)
             end
         end
-        context 'with server not available' do
+        context 'with server not available but socket file in place' do
             it 'must raise Errno::ENOENT' do
-                s = tcp_socket( port: 9999 )
+                s = unix_socket
+                10.times do
+                    s.connect
+                    check_connected(s, true)
+                    expect(s.connect_count).to eq 1
+                end
+                s.disconnect
+                expect(s.disconnect_count).to eq 1
+            end
+        end
+        context 'with server not available AND socket file does NOT exists' do
+            
+            let :socket_path do
+                "#{TEST_LOGS_PATH}/9999"
+            end
+            
+            it 'must raise Errno::ENOENT' do
+                expect(File.exist?(socket_path)).to be false
+                s = unix_socket
                 10.times do
                     expect {
                         s.connect
-                    }.to raise_error(Errno::ECONNREFUSED, /Connection refused/)
+                    }.to raise_error(Errno::ENOENT, /No such file or directory/)
                     check_connected(s, false)
                     expect(s.connect_count).to eq 0
                 end
             end
         end
-        context 'times out' do
-            
-            let :host do
-                # non-routable IP address, to simulate connect timeout
-                '10.255.255.1'
-            end
-            
-            it 'must raise Timeout::Error' do
-                s = tcp_socket
-                expect{
-                    s.connect
-                }.to raise_error(Timeout::Error, /Timeout is set to/)
-                check_connected(s, false)
-                expect(s.disconnect_count).to eq 0
-            end
-        end
     end
     describe 'send_msg' do
         it 'must connect if not already connected' do
-            s = tcp_socket
+            s = unix_socket
             10.times do |i|
                 msg = i.to_s
                 expect(s.send_msg(i.to_s).chomp).to eq msg
@@ -118,7 +114,7 @@ describe EasySockets::TcpSocket do
             end
 
             it 'must raise an error and disconnect' do
-                s = tcp_socket
+                s = unix_socket
                 s.connect
                 check_connected(s, true)
                 expect(s.send_msg(msg).chomp).to eq msg
@@ -126,7 +122,7 @@ describe EasySockets::TcpSocket do
 
                 expect {
                     s.send_msg('bla')
-                }.to raise_error(/(end of file|Connection reset)/) # can be EOFError or ECONNRESET depending on the OS
+                }.to raise_error(Errno::EPIPE)
                 check_connected(s, false)
                 expect(s.connect_count).to eq 1
                 expect(s.disconnect_count).to eq 1
@@ -150,7 +146,7 @@ describe EasySockets::TcpSocket do
             end
             
             it 'must raise Timeout::Error and disconnect' do
-                s = tcp_socket
+                s = unix_socket
                 s.connect
                 
                 set_timeout(s, 0.000001)
@@ -164,32 +160,32 @@ describe EasySockets::TcpSocket do
             end
         end
         context 'separators' do
-            
+
             let(:my_socket) do
-                Class.new(EasySockets::TcpSocket) do
+                Class.new(EasySockets::UnixSocket) do
 
                     attr_reader :msg_sent
-                
+
                     def connect
                     end
-                
+
                     private
-                
+
                     def send_non_block(msg)
                         @msg_sent = msg
                     end
-                
+
                     def receive_non_block
                     end
                 end
             end
-            
+
             context 'when we use a msg separator' do
-            
+
                 let :separators do
                     [nil, "\r", "\n", "\r\n", "\n\r", '111', 'aaa', 'zzz']
                 end
-            
+
 
                 it 'it must proparly set the message before sending it' do
                     separators.each do |sep|
@@ -209,17 +205,17 @@ describe EasySockets::TcpSocket do
             end
         end
         context 'when msg size is smaller than CHUNK_SIZE' do
-            
+
             let :range do
                 (0..EasySockets::CHUNK_SIZE)
             end
-            
+
             let :step do
                 EasySockets::CHUNK_SIZE / 16
             end
-            
+
             it 'must properly send and receive the msg' do
-                s = tcp_socket
+                s = unix_socket
                 range.step(step) do |i|
                     msg_to_send = get_msg(i)
                     resp = s.send_msg(msg_to_send)
@@ -229,12 +225,12 @@ describe EasySockets::TcpSocket do
             end
         end
         context 'when msg size is bigger than CHUNK_SIZE' do
-            
+
             let :range do
                 (1..10)
             end
             it 'must properly send and receive the msg' do
-                s = tcp_socket
+                s = unix_socket
                 range.each do |i|
                     msg_to_send = 'x' * EasySockets::CHUNK_SIZE * i
                     expect(msg_to_send.bytes.size).to eq(EasySockets::CHUNK_SIZE * i)
@@ -248,7 +244,7 @@ describe EasySockets::TcpSocket do
     describe 'disconnect' do
         context 'with socket disconnected' do
             it 'should not do anything' do
-                s = tcp_socket
+                s = unix_socket
                 check_connected(s, false)
                 10.times do
                     s.disconnect
@@ -259,7 +255,7 @@ describe EasySockets::TcpSocket do
         end
         context 'with socket connected' do
             it 'must be idempotent'  do
-                s = tcp_socket
+                s = unix_socket
                 s.connect
                 check_connected(s, true)
                 10.times do

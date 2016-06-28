@@ -68,6 +68,14 @@ module EasySockets
             log(:info, 'Connection reset by peer.')
             self.disconnect
             raise e
+        rescue Errno::EPIPE => e
+            log(:info, 'Broken pipe.')
+            self.disconnect
+            raise e
+        rescue Errno::ECONNREFUSED => e
+                log(:info, 'Connection refused by peer.')
+                self.disconnect
+                raise e
         rescue Exception => e
             @socket.close if @socket && !@socket.closed?
             raise e
@@ -113,6 +121,10 @@ module EasySockets
                 end
             rescue EOFError => e
                 log(:info, "Server disconnected.")
+                self.disconnect
+                raise e
+            rescue Errno::EPIPE => e
+                log(:info, "Broken pipe.")
                 self.disconnect
                 raise e
             end
