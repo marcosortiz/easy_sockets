@@ -1,4 +1,5 @@
 require 'logger'
+require 'socket'
 require 'easy_sockets/constants'
 require 'easy_sockets/utils/server_utils'
 
@@ -29,7 +30,6 @@ module EasySockets
             @logger.info "Listening on #{@socket_path}"
             loop do
                 shutdown if @stop_requested
-                # connection = @server.accept
                 connection = accept_non_block(@server)
                 @connections << connection
                 handle(connection)
