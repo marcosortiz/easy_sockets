@@ -122,7 +122,7 @@ describe EasySockets::UnixSocket do
 
                 expect {
                     s.send_msg('bla')
-                }.to raise_error(Errno::EPIPE)
+                }.to raise_error(/(Broken pipe|Connection reset)/) # can be Errno::EPIPE or ECONNRESET depending on the OS
                 check_connected(s, false)
                 expect(s.connect_count).to eq 1
                 expect(s.disconnect_count).to eq 1
