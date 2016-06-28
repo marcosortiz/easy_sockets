@@ -39,7 +39,7 @@ module EasySockets
         def on_connect
         end
         
-        def send_msg(msg)
+        def send_msg(msg, read_response=true)
             msg_to_send = msg.dup
             msg_to_send << @separator unless @separator.nil? || msg.end_with?(@separator)
 
@@ -47,11 +47,13 @@ module EasySockets
             connect
 
             log(:debug, "Sending #{msg_to_send.inspect}")
-            send(msg_to_send)
+            send_non_block(msg_to_send)
             
-            resp = receive_msg
-            log(:debug, "Got #{resp.inspect}")
-            resp
+            if read_response
+                resp = receive_non_block 
+                log(:debug, "Got #{resp.inspect}")
+                resp
+            end
         # Raised by some IO operations when reaching the end of file. Many IO methods exist in two forms,
         # one that returns nil when the end of file is reached, the other raises EOFError EOFError.
         # EOFError is a subclass of IOError.
@@ -81,11 +83,20 @@ module EasySockets
             @separator = nil if opts[:no_msg_separator] == true
         end
         
-        def send(msg)
-            @socket.sendmsg(msg)
+        def send_non_block(msg)
+            begin
+                loop do
+                    bytes = @socket.write_nonblock(msg)
+                    break if bytes >= msg.size
+                    msg.slice!(0, bytes)
+                    IO.select(nil, [@socket])
+                end
+            rescue Errno::EAGAIN
+                IO.select(nil, [@socket])
+            end
         end
         
-        def receive_msg
+        def receive_non_block
             resp = ''
             begin
                 resp << @socket.read_nonblock(CHUNK_SIZE)

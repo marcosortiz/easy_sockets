@@ -163,28 +163,49 @@ describe EasySockets::TcpSocket do
                 expect(s.disconnect_count).to eq 1
             end
         end
-        context 'when we use a msg separator' do
-            let :separators do
-                [nil, "\r", "\n", "\r\n", "\n\r", '111', 'aaa', 'zzz']
-            end
+        context 'separators' do
             
-            it 'it must proparly set the message before sending it' do
-                separators.each do |sep|
-                    s = tcp_socket(separator: sep)
-                    sep = EasySockets::CRLF if sep.nil?
-                    resp = s.send_msg(msg)
-                    expect(resp).to eq("#{msg}#{sep}")
-                    s.disconnect
+            let(:my_socket) do
+                Class.new(EasySockets::TcpSocket) do
+
+                    attr_reader :msg_sent
+                
+                    def connect
+                    end
+                
+                    private
+                
+                    def send_non_block(msg)
+                        @msg_sent = msg
+                    end
+                
+                    def receive_non_block
+                    end
                 end
             end
-        end
-        context 'when we do NOT use a msg separator' do
             
-            it 'we must send the msg without any separator' do
-                s = tcp_socket(no_msg_separator: true)
-                resp = s.send_msg(msg)
-                expect(resp).to eq(msg)
-                s.disconnect
+            context 'when we use a msg separator' do
+            
+                let :separators do
+                    [nil, "\r", "\n", "\r\n", "\n\r", '111', 'aaa', 'zzz']
+                end
+            
+
+                it 'it must proparly set the message before sending it' do
+                    separators.each do |sep|
+                        s = my_socket.new(opts.merge(separator: sep ))
+                        s.send_msg(msg)
+                        sep_in_use = sep.nil? ? EasySockets::CRLF : sep
+                        expect(s.msg_sent).to eq("#{msg}#{sep_in_use}")
+                    end
+                end
+            end
+            context 'when we do NOT use a msg separator' do
+                it 'must send the msg without any separator' do
+                    s = my_socket.new(no_msg_separator: true)
+                    s.send_msg(msg)
+                    expect(s.msg_sent).to eq msg
+                end
             end
         end
         context 'when msg size is smaller than CHUNK_SIZE' do
