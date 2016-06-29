@@ -10,19 +10,17 @@ module EasySockets
         
         DEFAULT_TIMEOUT = 0.5
         
-        attr_reader :logger, :connected, :connect_count, :disconnect_count
+        attr_reader :logger, :connected
+        alias_method :connected?, :connected
         
         def initialize(opts={})
             setup_opts(opts)
             @connected = false
-            @connect_count = 0
-            @disconnect_count = 0
         end
         
         def connect
             return if @connected && (@socket && !@socket.closed?)
             on_connect
-            @connect_count +=1
             @connected = true
         end
 
@@ -32,7 +30,7 @@ module EasySockets
                 @socket.close 
                 log(:debug, "Socket successfully disconnected")
                 @connected = false
-                @disconnect_count += 1
+                return true
             end
         end
         

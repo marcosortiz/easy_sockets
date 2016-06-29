@@ -23,11 +23,12 @@ describe EasySockets::UnixSocket do
     end
     
     def unix_socket(options={})
-        EasySockets::UnixSocket.new(opts.merge(options))
+        # EasySockets::UnixSocket.new(opts.merge(options))
+        MyTestUnixSocket.new(opts.merge(options))
     end
 
     def check_connected(socket, status)
-        expect(socket.connected).to be status
+        expect(socket.connected?).to be status
         s = socket.instance_variable_get(:@socket)
         expect(s.closed?).to be !status if s
     end
@@ -49,7 +50,7 @@ describe EasySockets::UnixSocket do
             expect(s.instance_variable_get(:@separator)).to eq EasySockets::CRLF
             expect(s.connect_count).to eq 0
             expect(s.disconnect_count).to eq 0
-            expect(s.connected).to be false
+            expect(s.connected?).to be false
         end
     end
     describe 'connecting' do
