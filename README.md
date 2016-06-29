@@ -33,7 +33,6 @@ I also strongly recommend [the following book](http://www.jstorimer.com/products
 ## Installation
 
 Add this line to your application's Gemfile:
-
 ```ruby
 gem 'easy_sockets'
 ```
@@ -48,7 +47,7 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: pending.
+Please check our [website]( https://marcosortiz.github.io/easy_sockets) for details.
 
 ## Development
 
