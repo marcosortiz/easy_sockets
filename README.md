@@ -189,7 +189,7 @@ Press `Ctrl+c` on the client and server terminal windows to terminate both.
 
 ### Unix Sockets
 
-Open up a terminal window and type the following to start a TCP server:
+Open up a terminal window and type the following to start a Unix server:
 ```bash
 nc -Ul /tmp/test_socket
 ```
