@@ -20,7 +20,7 @@
 
 ## Description
 
-Over and over I see developers struggling to implement basic sockets with featues available on ruby socket stdlib.
+Over and over I see developers struggling to implement basic sockets with features available on ruby socket stdlib.
 
 easy_sockets, takes care of basic details that usually are overlooked by developers when implementing TCP/Unix sockets from scratch.
 
