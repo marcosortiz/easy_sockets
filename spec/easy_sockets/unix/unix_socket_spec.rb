@@ -121,9 +121,10 @@ describe EasySockets::UnixSocket do
                 expect(s.send_msg(msg).chomp).to eq msg
                 check_connected(s, true) # at this oint the server disconnected us, but we don't know it yet
 
+                # can be Errno::EPIPE, ECONNRESET or EOFError
                 expect {
                     s.send_msg('bla')
-                }.to raise_error(/(Broken pipe|Connection reset)/) # can be Errno::EPIPE or ECONNRESET depending on the OS
+                }.to raise_error(/(Broken pipe|Connection reset|end of file reached)/) 
                 check_connected(s, false)
                 expect(s.connect_count).to eq 1
                 expect(s.disconnect_count).to eq 1
