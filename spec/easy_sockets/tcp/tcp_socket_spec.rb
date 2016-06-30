@@ -28,11 +28,11 @@ describe EasySockets::TcpSocket do
     end
     
     def tcp_socket(options={})
-        EasySockets::TcpSocket.new(opts.merge(options))
+        MyTestTcpSocket.new(opts.merge(options))
     end
 
     def check_connected(socket, status)
-        expect(socket.connected).to be status
+        expect(socket.connected?).to be status
         s = socket.instance_variable_get(:@socket)
         expect(s.closed?).to be !status if s
     end
@@ -55,7 +55,7 @@ describe EasySockets::TcpSocket do
             expect(s.instance_variable_get(:@separator)).to eq EasySockets::CRLF
             expect(s.connect_count).to eq 0
             expect(s.disconnect_count).to eq 0
-            expect(s.connected).to be false
+            expect(s.connected?).to be false
         end
     end
     describe 'connecting' do

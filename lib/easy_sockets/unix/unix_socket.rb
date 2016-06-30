@@ -1,15 +1,25 @@
 require 'easy_sockets/basic_socket'
 
 module EasySockets
+    #
+    # @author Marcos Ortiz
+    # Subclass of {EasySockets::BasicSocket} that implement a Unix socket.
+    #
     class UnixSocket < EasySockets::BasicSocket
         
         DEFAULT_SOCKET_PATH = '/tmp/unix_socket'
-        
+
+        #
+        # @param [Hash] opts the options to create a socket with.
+        # @option opts [Integer] :socket_path ('/tmp/unix_socket') The unix socket file path.
+        #
+        # It also accepts all options that {EasySockets::BasicSocket#initialize} accepts
         def initialize(opts={})
-            opts[:log_path] ||= 'logs/sockets/unix_socket'
             super(opts)
             @socket_path = opts[:socket_path] || DEFAULT_SOCKET_PATH
         end
+        
+        private
         
         def on_connect
             @socket = Socket.new(:UNIX, :STREAM)

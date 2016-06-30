@@ -23,11 +23,12 @@ describe EasySockets::UnixSocket do
     end
     
     def unix_socket(options={})
-        EasySockets::UnixSocket.new(opts.merge(options))
+        # EasySockets::UnixSocket.new(opts.merge(options))
+        MyTestUnixSocket.new(opts.merge(options))
     end
 
     def check_connected(socket, status)
-        expect(socket.connected).to be status
+        expect(socket.connected?).to be status
         s = socket.instance_variable_get(:@socket)
         expect(s.closed?).to be !status if s
     end
@@ -49,7 +50,7 @@ describe EasySockets::UnixSocket do
             expect(s.instance_variable_get(:@separator)).to eq EasySockets::CRLF
             expect(s.connect_count).to eq 0
             expect(s.disconnect_count).to eq 0
-            expect(s.connected).to be false
+            expect(s.connected?).to be false
         end
     end
     describe 'connecting' do
@@ -120,9 +121,10 @@ describe EasySockets::UnixSocket do
                 expect(s.send_msg(msg).chomp).to eq msg
                 check_connected(s, true) # at this oint the server disconnected us, but we don't know it yet
 
+                # can be Errno::EPIPE, ECONNRESET or EOFError
                 expect {
                     s.send_msg('bla')
-                }.to raise_error(/(Broken pipe|Connection reset)/) # can be Errno::EPIPE or ECONNRESET depending on the OS
+                }.to raise_error(/(Broken pipe|Connection reset|end of file reached)/) 
                 check_connected(s, false)
                 expect(s.connect_count).to eq 1
                 expect(s.disconnect_count).to eq 1
