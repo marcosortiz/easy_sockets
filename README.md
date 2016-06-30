@@ -73,7 +73,7 @@ irb(main):012:0> s.disconnect
 
 ### Safe connect, read and write timeout implementation
 
-There is a lot of material on the internet saying ([why you should not use ruby timeout stdlib](http://www.mikeperham.com/2015/05/08/timeout-rubys-most-dangerous-api/) ). However, over and over I see developers using the timeout stdlib for production code!
+There is a lot of material on the internet saying [why you should not use ruby timeout stdlib](http://www.mikeperham.com/2015/05/08/timeout-rubys-most-dangerous-api/). However, over and over I see developers using the timeout stdlib for production code!
 
 easy_sockets implements connect, read and write timeouts using [IO.select](http://ruby-doc.org/core-2.3.1/IO.html#method-c-select).
 
