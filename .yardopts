@@ -1,0 +1,6 @@
+--no-private
+--protected
+--markup="markdown" lib/**/*.rb
+--main README.md
+-M redcarpet
+--exclude (tcp_server.rb|unix_server.rb|server_utils.rb)
