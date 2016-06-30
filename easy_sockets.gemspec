@@ -10,14 +10,14 @@ Gem::Specification.new do |spec|
   spec.email         = ["marcos.ortiz@icloud.com"]
 
   spec.summary       = %q{Wrapper around ruby socket stdlib to make developer's life easier'.}
-  spec.description   = %q{easy_logger allow you to easily implement reliable sockets timeouts. It also makes sure to disconnect any open connection in an event of an exception.}
-  spec.homepage      = "https://github.com/marcosortiz/easy_sockets."
+  spec.description   = %q{Over and over I see developers struggling to implement basic sockets with featues available on ruby socket stdlib. easy_sockets, takes care of basic details that usually are overlooked by developers when implementing TCP/Unix sockets from scratch.}
+  spec.homepage      = "https://github.com/marcosortiz/easy_sockets"
   spec.license       = "MIT"
 
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
   # to allow pushing to a single host or delete this section to allow pushing to any host.
   if spec.respond_to?(:metadata)
-    spec.metadata['allowed_push_host'] = "TODO: Set to 'http://mygemserver.com'"
+    spec.metadata['allowed_push_host'] = 'http://rubygems.org'
   else
     raise "RubyGems 2.0 or newer is required to protect against public gem pushes."
   end

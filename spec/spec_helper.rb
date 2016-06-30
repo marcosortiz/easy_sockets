@@ -23,6 +23,30 @@ RSpec.configure do |config|
     end
 end
 
+
+class MyTestTcpSocket < EasySockets::TcpSocket
+    attr_reader :connect_count, :disconnect_count
+    
+    def initialize(opts={})
+        super(opts)
+        @connect_count = 0
+        @disconnect_count = 0
+    end
+    
+    def connect
+        prev = self.connected?
+        super
+        @connect_count += 1 if self.connected? && prev != self.connected?
+    end
+
+    def disconnect
+        prev = self.connected?
+        super
+        @disconnect_count += 1 if !self.connected? && prev != self.connected?
+    end
+    
+end
+
 def start_tcp_server(port=2500)
     @servers ||= []
     t = Thread.new do
@@ -35,6 +59,29 @@ def start_tcp_server(port=2500)
     end
     @servers << t
     t.join(0.01)
+end
+
+class MyTestUnixSocket < EasySockets::UnixSocket
+    attr_reader :connect_count, :disconnect_count
+    
+    def initialize(opts={})
+        super(opts)
+        @connect_count = 0
+        @disconnect_count = 0
+    end
+    
+    def connect
+        prev = self.connected?
+        super
+        @connect_count += 1 if self.connected? && prev != self.connected?
+    end
+
+    def disconnect
+        prev = self.connected?
+        super
+        @disconnect_count += 1 if !self.connected? && prev != self.connected?
+    end
+    
 end
 
 def start_unix_server(socket_path="#{TEST_LOGS_PATH}/unix_server")
