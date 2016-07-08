@@ -12,7 +12,7 @@ opts = {
     separator: "\r\n",
     logger: Logger.new(STDOUT),
 }
-s = EasySockets::UnixSocket.new(opts)
+s = EasySockets::TcpSocket.new(opts)
 [:INT, :QUIT, :TERM].each do |signal|
     Signal.trap(signal) do
         exit
