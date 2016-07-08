@@ -16,7 +16,7 @@ module EasySockets
         def initialize(opts={})
             super(opts)
             
-            @port = opts[:port].to_i || '127.0.0.1'
+            @port = opts[:port].to_i
             @port = DEFAULT_PORT if @port <= 0
             @host = opts[:host] || DEFAULT_HOST
         end
