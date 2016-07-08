@@ -191,7 +191,7 @@ Press `Ctrl+c` on the client and server terminal windows to terminate both.
 
 Open up a terminal window and type the following to start a Unix server:
 ```bash
-nc -Ul /tmp/test_socket
+nc -Ucl /tmp/test_socket
 ```
 
 On another terminal window, run the following [code](https://github.com/marcosortiz/easy_sockets/blob/master/examples/unix_socket.rb) to start the client:
@@ -262,6 +262,82 @@ Please write the message you want to send and hit ENTER, or type Ctrl+c to quit:
 ```
 
 Press `Ctrl+c` on the client and server terminal windows to terminate both. Also, type `rm -rf /tmp/test_socket` to remove the socket file.
+
+### UDP Sockets
+
+Open up a terminal window and type the following to start a TCP server:
+```bash
+nc -ukcl 2500
+```
+
+On another terminal window, run the following [code](https://github.com/marcosortiz/easy_sockets/blob/master/examples/udp_socket.rb) to start the client:
+```ruby
+require 'easy_sockets'
+
+host = ARGV[0] || '127.0.0.1'
+
+port = ARGV[1].to_i
+port = 2500 if port <= 0
+
+opts = {
+    host:      host,
+    port:      port,
+    timeout:   300,
+    separator: "\r\n",
+    logger: Logger.new(STDOUT),
+}
+s = EasySockets::UdpSocket.new(opts)
+[:INT, :QUIT, :TERM].each do |signal|
+    Signal.trap(signal) do
+        exit
+    end
+end
+
+loop do
+    puts "Please write the message you want to send and hit ENTER, or type Ctrl+c to quit:"
+    msg = gets.chomp
+    s.send_msg(msg)
+end
+```
+
+Then typing `sample_request` in the client terminal, you should see:
+```
+$ bundle exec ruby examples/udp_socket.rb 
+Please write the message you want to send and hit ENTER, or type Ctrl+c to quit:
+sample_request
+D, [2016-07-08T10:45:17.935787 #83697] DEBUG -- : Successfully connected to udp://127.0.0.1:2500.
+D, [2016-07-08T10:45:17.935893 #83697] DEBUG -- : Sending "sample_request\r\n"
+
+```
+
+And the server terminal window should display:
+```
+$ nc -ukcl 2500
+sample_request
+
+```
+
+Then type `sample_response` on the server terminal window, and you should see:
+```
+$ nc -ukcl 2500
+sample_request
+sample_response
+
+```
+
+And the client window should show:
+```
+$ bundle exec ruby examples/udp_socket.rb 
+Please write the message you want to send and hit ENTER, or type Ctrl+c to quit:
+sample_request
+D, [2016-07-08T10:45:17.935787 #83697] DEBUG -- : Successfully connected to udp://127.0.0.1:2500.
+D, [2016-07-08T10:45:17.935893 #83697] DEBUG -- : Sending "sample_request\r\n"
+D, [2016-07-08T10:45:22.086731 #83697] DEBUG -- : Got "sample_response\r\n"
+Please write the message you want to send and hit ENTER, or type Ctrl+c to quit:
+
+```
+
+Press `Ctrl+c` on the client and server terminal windows to terminate both.
 
 ## Development
 
