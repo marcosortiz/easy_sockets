@@ -26,8 +26,6 @@ easy_sockets, takes care of basic details that usually are overlooked by develop
 
 I also strongly recommend [the following book](http://www.jstorimer.com/products/working-with-tcp-sockets) if you want to learn more about TCP sockets.
 
-> UDP socket support is comming soon.
-
 ### Dependencies
 
 easy_sockets only uses the following ruby stdlib gems:
