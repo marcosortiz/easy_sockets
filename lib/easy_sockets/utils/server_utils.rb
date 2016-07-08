@@ -37,6 +37,25 @@ module EasySockets
             msg
         end
         
+        def udp_read_non_block(connection)
+            total_msg = ''
+            addr = nil
+            begin
+                msg, addr = connection.recvfrom_nonblock(CHUNK_SIZE)
+                total_msg << msg
+                while !total_msg.end_with?(@separator) do
+                    msg, addr = connection.recvfrom_nonblock(EasySockets::CHUNK_SIZE)
+                    total_msg << msg
+                end
+                @logger.info "Got: #{total_msg.inspect}" unless total_msg.nil? || total_msg.empty?
+                total_msg.empty? ? nil : [total_msg, addr]
+            rescue IO::WaitReadable
+                if IO.select([connection], nil, nil, @timeout)
+                    retry
+                end
+            end
+        end
+        
         def write_non_block(connection, msg)
             return 0 unless msg && msg.is_a?(String)
             total_bytes = 0
